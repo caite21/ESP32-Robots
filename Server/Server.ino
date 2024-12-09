@@ -1,3 +1,13 @@
+/* 
+  Serves the web page and communicates with clients via WebSockets. 
+  
+  Users can control multiple ESP32 clients by clicking buttons on the web interface.
+  Web interface clients send JSON messages of commands to the server. The server forwards 
+  the message to the correct ESP32 client. The client receives the message and executes 
+  the command. 
+*/
+
+// Enter Wi-Fi credentials
 const char* ssid = "";
 const char* password = "";
 
@@ -11,9 +21,75 @@ const char* password = "";
 
 AsyncWebSocket ws("/ws");
 AsyncWebServer server(80);
-
 std::map<String, uint8_t> deviceMap;
 
+String getDeviceName(int id) {
+  for (auto d : deviceMap) {
+    if (d.second == id) {
+      return d.first;
+    } else {
+      return "ID does not exist.";
+    }
+  }
+}
+
+void sendToInterface(String alert) {
+  // TODO: can only send alerts to first web client, need to track all web clients
+  Serial.println(alert);
+  if (deviceMap.count("web") != 0) {
+    ws.text(deviceMap["web"], alert);
+  }
+}
+
+// Messages are in JSON
+void handleWebSocketMessage(void* arg, uint8_t* data, size_t len, uint8_t client_id) {
+  AwsFrameInfo* info = (AwsFrameInfo*)arg;
+  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
+    DynamicJsonDocument doc(512);
+    deserializeJson(doc, data);
+
+    String name = doc["name"];
+    String command = doc["command"];
+    String state = doc["state"];
+    uint8_t value = doc["value"];
+
+    // Notify web interface that a new device is connected and remember its name
+    if (command == "set_name") {
+      sendToInterface("Device connected: " + name);
+      deviceMap[name] = client_id;
+      return;
+    }
+
+    if (deviceMap.count(name) == 0) {
+      sendToInterface("Command denied: Device not connected.");
+    }
+    else {
+      // forward message
+      ws.binary(deviceMap[name], data, len);
+    }
+  }
+}
+
+void onEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
+  switch (type) {
+    case WS_EVT_CONNECT: {
+      Serial.printf("Client %u connected\n", client->id());
+      break;
+    }
+    case WS_EVT_DISCONNECT: {
+      Serial.printf("Client %u disconnected\n", client->id());
+      String name_disconnected = getDeviceName(client->id());
+      sendToInterface("Device disconnected: " + name_disconnected);
+      deviceMap.erase(name_disconnected);
+      break;
+    }
+    case WS_EVT_DATA: {
+      Serial.println("Server received message!");
+      handleWebSocketMessage(arg, data, len, client->id());
+      break;
+    }
+  }
+}
 
 // HTML for the web interface
 const char* webpage = R"rawliteral(
@@ -164,75 +240,6 @@ const char* webpage = R"rawliteral(
 </body>
 </html>
 )rawliteral";
-
-String getDeviceName(int id) {
-  for (auto d : deviceMap) {
-    if (d.second == id) {
-      return d.first;
-    }
-    else {
-      return "ID does not exist.";
-    }
-  }
-}
-
-void sendToInterface(String alert) {
-  // TODO: can only send alerts to first web client, need to track all web clients
-  //       in a list and send messages to all of them
-  Serial.println(alert);
-  if (deviceMap.count("web") != 0) {
-    ws.text(deviceMap["web"], alert);
-  }
-}
-
-void handleWebSocketMessage(void* arg, uint8_t* data, size_t len, uint8_t client_id) {
-  AwsFrameInfo* info = (AwsFrameInfo*)arg;
-  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
-    DynamicJsonDocument doc(512);
-    deserializeJson(doc, data);
-
-    String name = doc["name"];
-    String command = doc["command"];
-    String state = doc["state"];
-    uint8_t value = doc["value"];
-
-    if (command == "set_name") {
-      sendToInterface("Device connected: " + name);
-      deviceMap[name] = client_id;
-      return;
-    }
-
-    if (deviceMap.count(name) == 0) {
-      sendToInterface("Command denied: Device not connected.");
-    }
-    else {
-      // forward message
-      ws.binary(deviceMap[name], data, len);
-    }
-  }
-}
-
-
-void onEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
-  switch (type) {
-    case WS_EVT_CONNECT: {
-      Serial.printf("Client %u connected\n", client->id());
-      break;
-    }
-    case WS_EVT_DISCONNECT: {
-      Serial.printf("Client %u disconnected\n", client->id());
-      String name_disconnected = getDeviceName(client->id());
-      sendToInterface("Device disconnected: " + name_disconnected);
-      deviceMap.erase(name_disconnected);
-      break;
-    }
-    case WS_EVT_DATA: {
-      Serial.println("Server received message!");
-      handleWebSocketMessage(arg, data, len, client->id());
-      break;
-    }
-  }
-}
 
 void setup() {
   Serial.begin(115200);
