@@ -1,9 +1,10 @@
+/* Client executes LED commands from the web interface */
 
+// Enter Wi-Fi credentials 
 const char* ssid = "";
 const char* password = "";
-
+// Give this client a name
 const char* MY_NAME = "";
-
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -11,12 +12,14 @@ const char* MY_NAME = "";
 #include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 
+
 const char* serverIP = "10.0.0.101"; // Primary ESP32 IP
 const int serverPort = 80;
 
 WebSocketsClient webSocket;
 const int ledPin = 33; // GPIO for LED
 
+/* Commands are in JSON */
 void handleWebSocketMessage(const char* payload) {
   DynamicJsonDocument doc(256);
   deserializeJson(doc, payload);
@@ -25,7 +28,6 @@ void handleWebSocketMessage(const char* payload) {
 
   if (name == MY_NAME) {
     String command = doc["command"];
-    
     if (command == "set_led") {
       String state = doc["state"];
       if (state == "on") {
@@ -35,9 +37,7 @@ void handleWebSocketMessage(const char* payload) {
       }
     }
   }
-
 }
-
 
 void webSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
   switch (type) {
@@ -52,12 +52,11 @@ void webSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
     case WStype_CONNECTED: {
       Serial.println("WebSocket connected!");
 
+      // Notify the web interface that this client is connected
       DynamicJsonDocument message(128);
       String jsonString;
-
       message["command"] = "set_name";
       message["name"] = MY_NAME;
-      
       serializeJson(message, jsonString);
       webSocket.sendTXT(jsonString);
       break;
@@ -81,7 +80,7 @@ void setup() {
   }
   Serial.println("\nConnected to WiFi!");
 
-  // Setup WebSocket
+  // Set up WebSocket
   webSocket.begin(serverIP, serverPort, "/ws");
   webSocket.onEvent(webSocketEvent);
 }
