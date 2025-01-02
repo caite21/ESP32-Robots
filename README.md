@@ -12,6 +12,11 @@ This system uses parallel task management to independently control the upper and
 
 Version 2.1 (left) Version 1.0 (right)
 
+**Key Features:**
+- **Parallel Control:** Independently manages upper and lower body movements.
+- **Smooth Motion:** Servo movements are gradually slowed and smoothed with adjustable delays for acceleration and deceleration.
+- **Modular Design:** The object-oriented programming (OOP) structure abstracts parallel servo steps and organizes servos into logical body part groups (e.g., leg, legs, arm, arms), simplifying control and improving code maintainability.
+
 **Components:** 
 - ESP32-WROOM-32D
 - x12 MG90S Metal Gear Micro Servos
@@ -20,24 +25,19 @@ Version 2.1 (left) Version 1.0 (right)
 - 6V Power Supply for Servo Driver
 - 3.3V Power Supply for Servo Driver logic, MPU-6050 logic, and ESP32
 
-**Key Features:**
-- **Parallel Control:** Independently manages upper and lower body movements.
-- **Smooth Motion:** Servo movements are gradually slowed and smoothed with adjustable delays for acceleration and deceleration.
-- **Modular Design:** The object-oriented programming (OOP) structure abstracts parallel servo steps and organizes servos into logical body part groups (e.g., leg, legs, arm, arms), simplifying control and improving code maintainability.
-
 
 ## RC RoboCar Design
-
 
 **Key Features:**
 - **Wireless Communication:** Utilizes ESP-NOW for low-latency, reliable communication between the remote control and the robot.
 - **Skid Steering Control:** Implements skid-steering logic using data from dual joysticks on the remote control.
+- **Support for Heavy Loads:** Equipped with 4 support wheels to distribute weight, reduce strain, and ensure stable heavy load handling.
 
 
 <img src="https://github.com/user-attachments/assets/c6a26b6b-00a3-4c9e-8731-a4ce020789a2" alt="Robo Car gif"/>
 <img src="https://github.com/user-attachments/assets/a2301321-068f-44e5-b97a-933604c310ef" alt="Remote Control" width="260px"/>
 
-RoboCar (left) and Remote Control (right)
+RoboCar and Remote Control
 
 **Components:** 
 - x2 ESP32-WROOM-32D
@@ -54,8 +54,7 @@ RoboCar (left) and Remote Control (right)
 
 </p>
 
-RoboCar Schematic (left) 
-Remote Control Schematic (right)
+RoboCar Schematic and Remote Control Schematic
 
 <!---
 ## Quadruped
@@ -63,17 +62,19 @@ Remote Control Schematic (right)
 
 
 ## IoT Design
-This IoT system features a centralized architecture, where a single server orchestrates communication 
-and control across multiple ESP32 clients. It leverages Wi-Fi for seamless connectivity and WebSocket 
-for real-time, bidirectional communication, ensuring low latency and efficient command execution. 
-Additionally, it supports device-to-device communication via Bluetooth Low Energy (BLE), providing flexible connectivity options.
+The IoT system employs a centralized architecture with a single server managing communication and control for multiple ESP32 clients. 
+It uses Wi-Fi for seamless connectivity and WebSocket for low-latency, real-time bidirectional communication, ensuring efficient 
+command execution. 
+Additional communication protocols include Bluetooth Low Energy (BLE) and ESP-NOW, providing versatile and efficient options for data exchange.
 
 
 - **Web Interface Clients** initiate commands via a user-friendly interface.
 - **ESP32 Server** acts as a central controller, hosting the web interface and relaying commands (JSON) to the appropriate ESP32 clients.
 - **ESP32 Clients** execute hardware-specific actions based on commands received from the server.
 
-<img src="https://github.com/user-attachments/assets/73430e0a-76c6-429e-8c54-d63966fa9557" alt="IoT System" width="65%"/>
+
+![IoT Diagram](https://github.com/user-attachments/assets/f9649429-6e01-4b28-90c7-2389f3cdd0c4)
+
 
 <!---
 **Web Interface:**
