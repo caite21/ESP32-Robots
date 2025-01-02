@@ -48,9 +48,9 @@ RoboCar (left) and Remote Control (right)
 
 
 <p>
-<img src="https://github.com/user-attachments/assets/fd1674b6-fb37-43bd-a88e-9d3303b20929" alt="Robo Car Schematic" width="350px"/> 
+<img src="https://github.com/user-attachments/assets/fd1674b6-fb37-43bd-a88e-9d3303b20929" alt="Robo Car Schematic" width="390px"/> 
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-<img src="https://github.com/user-attachments/assets/8af3e560-f5a4-484a-88ce-18e1c9abfe71" alt="Controller Schematic" width="370px"/>
+<img src="https://github.com/user-attachments/assets/8af3e560-f5a4-484a-88ce-18e1c9abfe71" alt="Controller Schematic" width="310px"/>
 
 </p>
 
