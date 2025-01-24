@@ -1,5 +1,17 @@
 # ESP32 Robots
 
+
+## BLE Light
+
+This project uses the ESP-IDF SDK and ESP32 NimBLE stack to implement a BLE GATT server that allows smartphone control of light power and color, automatically turns off all lights after a timer, and sends a notification when the timer expires.
+
+**Requirements:**
+- Hardware: ESP32 Development Board
+- Software: ESP-IDF SDK
+- Dependencies: NimBLE stack, FreeRTOS
+- Additional Tools for Testing and Debugging: LightBlue, Docker, QEMU, VS Code
+
+
 ## Humanoid Robot Design
 
 This system uses parallel task management to independently control the upper and lower body movements, ensuring synchronized and dynamic motion. Servo movements are smoothed with step delays, incorporating acceleration and deceleration adjustments for more natural motion.
