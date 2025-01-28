@@ -1,5 +1,6 @@
-# ESP32 Robots
+# ESP32 Home Robots and Devices
 
+This repository is a work in progress, featuring ongoing projects aimed at building a smarter and more automated home. From a humanoid robot and delivery bot to BLE-controlled lights, smart doors, and more, each project is a small step toward integrating intelligence, automation, and convenience into everyday living.
 
 ## BLE Light
 
